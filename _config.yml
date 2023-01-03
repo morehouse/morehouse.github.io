@@ -3,3 +3,6 @@ plugins:
 - jekyll-remote-theme
 title: Matt Morehouse
 description: Bitcoin Lightning Engineer
+show_downloads: false
+github:
+  repository_url: https://github.com/morehouse
