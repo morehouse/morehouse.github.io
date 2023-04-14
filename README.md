@@ -1,7 +1,7 @@
 I'm a software engineer working to improve the Bitcoin Lightning Network.  My
-current projects include [dual funding for
-LND](https://github.com/lightningnetwork/lnd/issues/6569) and helping to fix
-bugs and vulnerabilities in the various lightning implementations.
+current focus is improving the [security and
+stability](https://gist.github.com/morehouse/37ca81dd661359df20c3ee7976c3b5a2)
+of the lightning network.
 
 ## PGP Key
 
