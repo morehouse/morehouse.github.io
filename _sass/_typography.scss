@@ -100,6 +100,7 @@ p,
 li { 
 	code {
 		@include font-rem(12);
+		@include font-size(14);
 		line-height: 1.5;
 		white-space: nowrap;
 		margin: 0 2px;
@@ -122,4 +123,7 @@ pre {
 		background-color: #6a6d5d;
 		@include rounded(4px);
 	}
+}
+code {
+	@include font-size(14);
 }
