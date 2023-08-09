@@ -26,6 +26,9 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+env:
+  BUNDLE_PATH: "${GITHUB_WORKSPACE}/.gems"
+
 jobs:
   # Build job
   build:
