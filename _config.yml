@@ -24,6 +24,8 @@ menu:
     url: '/about'
   - title: 'Donate'
     url: '/donate'
+  - title: 'GitHub'
+    url: 'https://github.com/morehouse'
       #- title: 'Tags'
       #url: '/tags'
       #- title: 'Categories'
