@@ -6,7 +6,7 @@ share: true
 
 I'm a software engineer working to improve the Bitcoin Lightning Network.  My
 current focus is improving the [security and
-stability](https://gist.github.com/morehouse/37ca81dd661359df20c3ee7976c3b5a2)
+stability](https://opensats.org/blog/matt-morehouse-lightning-security-lts-grant)
 of the network.
 
 ## PGP Key
