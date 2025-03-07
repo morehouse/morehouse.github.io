@@ -44,21 +44,21 @@ Typically the estimator is requeried every block to update fee rates and RBF any
 
 [CLN](https://github.com/ElementsProject/lightning/blob/b5eef8af4db9f2a58f435bb5beb54299b2800e67/lightningd/chaintopology.c#L419-L440) and [LND](https://github.com/lightningnetwork/lnd/blob/f8211a2c3b3d2112159cd119bd7674743336c661/sweep/sweeper.go#L470-L493) prior to v0.18.0 use this strategy exclusively.
 [eclair](https://github.com/ACINQ/eclair/blob/95bbf063c9283b525c2bf9f37184cfe12c860df1/eclair-core/src/main/scala/fr/acinq/eclair/channel/publish/ReplaceableTxPublisher.scala#L221-L248) uses this strategy until deadlines are within 6 blocks, after which it switches to exponential bumping.
-[LDK](https://github.com/lightningdevkit/rust-lightning/blob/3a5f4282468e6148e592e324c2a72405bdb4b193/lightning/src/chain/package.rs#L1361-L1369) uses this strategy when the estimator returns a higher fee rate than the previous transaction; otherwise LDK uses exponential bumping.
+[LDK](https://github.com/lightningdevkit/rust-lightning/blob/3a5f4282468e6148e592e324c2a72405bdb4b193/lightning/src/chain/package.rs#L1361-L1369) uses a combined strategy that sometimes uses the fee rate from the estimator and other times uses exponential bumping.
 
 ## Exponential Bumping
 
 In this strategy, the fee rate estimator is used to determine the initial fee rate, after which a fixed multiplier is used to increase fee rates for each RBF transaction.
 
 [eclair](https://github.com/ACINQ/eclair/blob/95bbf063c9283b525c2bf9f37184cfe12c860df1/eclair-core/src/main/scala/fr/acinq/eclair/channel/publish/ReplaceableTxPublisher.scala#L221-L248) uses this strategy when deadlines are within 6 blocks, increasing fee rates by 20% each block.
-[LDK](https://github.com/lightningdevkit/rust-lightning/blob/3a5f4282468e6148e592e324c2a72405bdb4b193/lightning/src/chain/package.rs#L1361-L1369) uses this strategy when the external estimator does not return a higher fee rate than the previous transaction, in which case LDK increases fee rates by 25% for each RBF.
+When [LDK](https://github.com/lightningdevkit/rust-lightning/blob/3a5f4282468e6148e592e324c2a72405bdb4b193/lightning/src/chain/package.rs#L1361-L1369) uses this strategy, it increases fee rates by 25% on each RBF.
 
 ## Problems
 
 While external fee rate estimators can be helpful, they're not perfect.
 And relying on them too much can lead to missed deadlines when unusual things are happening in the mempool or with miners (e.g., increasing mempool congestion, pinning, replacement cycling, miner censorship).
 In such situations, higher-than-estimated fee rates may be needed to actually get transactions confirmed.
-Exponential bumping strategies help here but can still be ineffective if the original fee rate was undershot significantly.
+Exponential bumping strategies help here but can still be ineffective if the original fee rate was too low.
 
 # The Deadline and Budget Aware RBF Strategy
 
