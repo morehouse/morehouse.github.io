@@ -163,9 +163,15 @@ LND's new sweeper fixed these issues by being more careful about which inputs co
 
 ## Risks
 
-Discuss the riskiness of changing this security-critical code.
-Point to the many bugs introduced and fixed during the process.
+The security of a Lightning node depends heavily on its ability to resolve HTLCs on chain when necessary.
+And unfortunately proper on-chain resolution can be tricky to get right (see [1](https://morehouse.github.io/lightning/ldk-invalid-claims-liquidity-griefing/), [2](https://morehouse.github.io/lightning/ldk-duplicate-htlc-force-close-griefing/), [3](https://morehouse.github.io/lightning/lnd-excessive-failback-exploit/)).
+Making changes to the existing on-chain logic runs the risk of introducing new bugs and vulnerabilities.
+
+For example, during code reviews of LND's new sweeper there were many serious bugs discovered and fixed, ranging from catastrophic [fee function failures](https://github.com/lightningnetwork/lnd/issues/8738) to new [fund-stealing exploits](https://github.com/lightningnetwork/lnd/pull/8514#discussion_r1554270229) and more ([1](https://github.com/lightningnetwork/lnd/pull/8148#discussion_r1542012530), [2](https://github.com/lightningnetwork/lnd/pull/8424#pullrequestreview-1961358576), [3](https://github.com/lightningnetwork/lnd/pull/8422#discussion_r1528832418), [4](https://github.com/lightningnetwork/lnd/issues/8715), [5](https://github.com/lightningnetwork/lnd/issues/8737), [6](https://github.com/lightningnetwork/lnd/issues/8741)).
+Node implementers should tread carefully when touching these parts of the codebase and remember that simplicity is often the best security.
 
 # Conclusion
 
-Summary and call-to-action for other implementations to consider adopting an RBF strategy similar to LND's.
+LND's new deadline-aware budget sweeper provides more secure fee bumping in adversarial situations and more consistent behavior when mempools are rapidly changing.
+Other implementations should consider incorporating budget awareness into their fee bumping strategies to improve defenses against replacement cycling and pinning attacks, and to reduce reliance on external fee estimators.
+At the same time, implementers would do well to avoid complete rewrites of the on-chain logic and instead keep the changes small and review them well.
