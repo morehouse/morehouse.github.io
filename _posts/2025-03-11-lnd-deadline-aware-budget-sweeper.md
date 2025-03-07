@@ -84,17 +84,82 @@ In this blog post, we'll focus mostly on the sweeper's deadline and budget aware
 
 ## Benefits
 
+LND's new sweeper system provides greater security against replacement cycling, pinning, and other adversarial or unexpected scenarios.
+It also fixed some bad bugs and vulnerabilities present with LND's previous sweeper system.
+
 ### Replacement Cycling Defense
+
+Transaction rebroadcasting is a simple mitigation against [replacement cycling attacks](https://bitcoinops.org/en/topics/replacement-cycling/) that has been adopted by all implementations.
+However, rebroadcasting alone does not guarantee that such attacks become uneconomical, especially when HTLC values are much larger than the fees lightning nodes are willing to pay when claiming them on chain.
+By setting fee budgets in proportion to HTLC values, LND's new sweeper is able to provide much stronger guarantees that any replacement cycling attacks will be uneconomical.
+
+#### Cost of Replacement Cycling Attacks
+
+With LND's default parameters an attacker must generally spend at least 20x the value of the HTLC to successfully carry out a replacement cycling attack.
+
+Default parameters:
+
+- fee budget: 50% of HTLC value
+- CLTV delta: 80 blocks
+
+Assuming the attacker must do a minimum of one replacement per block:
+
+$$ attack\_cost \ge \sum_{t = 0}^{80} fee\_function(t) $$
+
+$$ attack\_cost \ge \sum_{t = 0}^{80} 0.5 \cdot htlc\_value \cdot \frac{t}{80} $$
+
+$$ attack\_cost \ge 20 \cdot htlc\_value $$
+
+LND also rebroadcasts transactions every minute by default, so in practice the attacker must do ~10 replacements per block, making the cost closer to 200x the HTLC value.
 
 ### Partial Pinning Defense
 
-### Reduced Reliance on Feerate Estimators
+Because LND's default RBF strategy pays up to 50% of the HTLC value, the chances of outbidding [pinning attacks](https://bitcoinops.org/en/topics/transaction-pinning/) are much higher, especially for larger HTLCs.
+It is unfortunate that significant fees need to be burned in this case, but the end result is still better than losing the full value of the HTLC.
+
+### Reduced Reliance on Fee Rate Estimators
+
+As explained earlier, fee rate estimators are not always accurate, especially when mempool conditions are changing rapidly.
+In these situations, it can be very beneficial to use a simpler RBF strategy, especially when deadlines are approaching.
+LDK and eclair use exponential bumping in these scenarios, which helps in many cases.
+But fundamentally the fee rate curve for an exponential bumping strategy depends only on the starting fee rate, while the value of the HTLC being claimed is ignored.
+To put it another way, larger HTLCs get the same fee rates as smaller HTLCs, even when deadlines are about to be missed.
+
+LND's budget-based approach takes HTLC values into consideration when establishing the fee rate curve, ensuring that budgets are never exceeded and that HTLCs are never lost before an attempt to spend the full budget has been made.
+As such, the budget-based approach provides more consistent results and greater security in unexpected or adversarial situations.
 
 ### LND-Specific Bug and Vulnerability Fixes
 
+LND's new sweeper fixed some bad bugs and vulnerabilities that existed with the previous sweeper.
+
 #### Fee Bump Failures
 
+Previously, LND had an inconsistent approach to broadcasting and fee bumping urgent transactions.
+In some places transactions would get broadcast with a specific confirmation target and would never be fee bumped again.
+In other places transactions would be RBF'd if the fee rate estimator determined that mempool fee rates had gone up, but the *confirmation target* given to the estimator would not be adjusted as deadlines approached.
+
+Perhaps the worst of these fee bumping failures was a [bug](https://github.com/lightningnetwork/lnd/issues/8522) reported by [Carsten Otto](https://github.com/C-Otto).
+If a commitment transaction was broadcast with a deadline far enough in the future, LND would initially choose to not use the anchor output to CPFP the transaction.
+This is fine, as there's no rush to confirm the commitment until the deadline gets closer.
+But when the deadline did get closer, LND would *still* fail to CPFP the commitment.
+As a result, the commitment could fail to confirm before HTLCs expired and funds could be lost.
+To make matters worse, the bug was trivial for an attacker to exploit.
+
+LND's sweeper rewrite took the opportunity to correct and unify all the transaction broadcasting and fee bumping logic in one place and fix all of these fee bump failures at once.
+
 #### Invalid Batching
+
+LND's previous sweeper also sometimes generated invalid or unsafe transactions when batching inputs together.
+This could happen in a couple ways:
+
+- Inputs that were invalid or had been double-spent could be batched with urgent HTLC claims, making the whole transaction invalid.
+- Anchor spends could be [batched together](https://github.com/lightningnetwork/lnd/issues/8433), thereby violating the CPFP carve out and enabling channel counterparties to pin commitment transactions.
+
+Rather than addressing these issues directly, the previous sweeper would use *exponential backoff* to regroup inputs after random delays and hope for a valid transaction.
+If another invalid transaction occurred, longer delays would be used before the next regrouping.
+Eventually, deadlines could be missed and funds lost.
+
+LND's new sweeper fixed these issues by being more careful about which inputs could be grouped together and by removing double-spent inputs from transactions that failed to broadcast.
 
 ## Risks
 
