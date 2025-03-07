@@ -62,7 +62,25 @@ Exponential bumping strategies help here but can still be ineffective if the ori
 
 # The Deadline and Budget Aware RBF Strategy
 
-Description of LND's new sweeper strategy, overview of architecture.
+LND's new sweeper subsystem, released in v0.18.0, takes a novel approach to RBFing commitment and HTLC transactions.
+The system was designed around a key observation: for each HTLC on a commitment transaction, there are specific *deadline* and *budget* constraints for claiming that HTLC.
+The **deadline** is the block height by which the node needs to confirm the claim transaction for the HTLC.
+The **budget** is the maximum absolute fee the node operator is willing to pay to sweep the HTLC by the deadline.
+In practice, the budget is likely to be a fixed proportion of the HTLC value (i.e. operators are willing to pay more fees for larger HTLCs), so LND's budget [configuration parameters](https://docs.lightning.engineering/lightning-network-tools/lnd/sweeper) are based on proportions.
+
+The sweeper operates by aggregating HTLC claims with matching deadlines into a single batched transaction.
+The budget for the batched transaction is calculated as the sum of the budgets for the individual HTLCs in the transaction.
+Based on the transaction budget and deadline, a **fee function** is computed that determines how much of the budget is spent as the deadline approaches.
+By default, a linear fee function is used which starts at a low fee (determined by the minimum relay fee rate or an external estimator) and ends with the total budget being allocated to fees when the deadline is one block away.
+The initial batched transaction is published and a "fee bumper" is assigned to monitor confirmation status in the background.
+For each block the transaction remains unconfirmed, the fee bumper broadcasts a new transaction with a higher fee rate determined by the fee function.
+
+The sweeper architecture looks like this:
+
+![channel funding diagram](/images/lnd_deadline_aware_budget_sweeper_header.png)
+
+For more details about LND's new sweeper, see the [technical documentation](https://github.com/lightningnetwork/lnd/blob/master/sweep/README.md).
+In this blog post, we'll focus mostly on the sweeper's deadline and budget aware RBF strategy.
 
 ## Benefits
 
