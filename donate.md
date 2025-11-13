@@ -4,12 +4,9 @@ title: Donate
 share: true
 ---
 
-Donations help support my family so that I can stay focused on improving
-Bitcoin.  Thank you!
+Donations help support my work.  Thank you!
 
-**Bitcoin address:** `bc1q4nvma6yxw0c73zcnt940jhtu0paue7awpnpaf3`
+**Bitcoin address:** `bc1paett88mvrnzvfge8ypht0tkmfwwazgnvkvs4k2f0pqwgxdtz552qyvdq27`
 
 Unique donation addresses available [by
 request](mailto:mattmorehouse@gmail.com).
-
-
