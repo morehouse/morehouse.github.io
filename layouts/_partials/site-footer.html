@@ -1,0 +1,16 @@
+<footer class="site-footer">
+  <div class="wrap">
+    <p>
+      Copyright {{ now.Format "2006" }} {{ site.Params.author }}.
+      Prose and images are licensed
+      <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>.
+    </p>
+    <p>
+      <a href="{{ "feed.xml" | relURL }}">Atom feed</a>
+      <span aria-hidden="true">/</span>
+      <a href="https://github.com/{{ site.Params.github }}">GitHub</a>
+      <span aria-hidden="true">/</span>
+      <a href="mailto:{{ site.Params.email }}">{{ site.Params.email }}</a>
+    </p>
+  </div>
+</footer>

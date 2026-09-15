@@ -1,0 +1,44 @@
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\"?>" | safeHTML }}
+{{- $base := strings.TrimSuffix "/" site.BaseURL -}}
+{{- $posts := first 20 (where site.RegularPages "Section" "lightning") -}}
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{{ or site.Language.Locale "en-us" }}">
+  <title type="text">{{ site.Title }}</title>
+  <subtitle type="text">{{ site.Params.description }}</subtitle>
+  <generator uri="https://gohugo.io/">Hugo</generator>
+  {{- /* .Permalink here would be the home page's HTML output, not this feed. */}}
+  {{- with .OutputFormats.Get "atom" }}
+  <link rel="self" type="application/atom+xml" href="{{ .Permalink }}"/>
+  {{- end }}
+  <link rel="alternate" type="text/html" href="{{ site.Home.Permalink }}"/>
+  <id>{{ site.Home.Permalink }}</id>
+  <updated>{{ site.Lastmod.Format "2006-01-02T15:04:05Z07:00" }}</updated>
+  <author>
+    <name>{{ site.Params.author }}</name>
+    <uri>{{ site.Home.Permalink }}</uri>
+    <email>{{ site.Params.email }}</email>
+  </author>
+  <rights>Copyright {{ now.Format "2006" }} {{ site.Params.author }}, licensed CC BY 4.0.</rights>
+{{ range $posts }}
+  {{- /* Feed readers resolve nothing relative to the site, so rewrite the
+         root-relative image and post links in the body to absolute URLs. */ -}}
+  {{- $content := .Content | replaceRE `(src|href)="/` (printf `${1}="%s/` $base) -}}
+  <entry>
+    <title type="text">{{ .Title }}</title>
+    <link rel="alternate" type="text/html" href="{{ .Permalink }}"/>
+    <id>{{ .Permalink }}</id>
+    <published>{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}</published>
+    <updated>{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}</updated>
+    <author>
+      <name>{{ site.Params.author }}{{ with .Params.coauthors }} and {{ delimit . ", " " and " }}{{ end }}</name>
+      <uri>{{ site.Home.Permalink }}</uri>
+      <email>{{ site.Params.email }}</email>
+    </author>
+    {{- with .Description }}
+    <summary type="text">{{ . }}</summary>
+    {{- end }}
+    {{- /* safeHTML is required: without it the template escapes the already
+           escaped string a second time and readers show literal tags. */}}
+    <content type="html">{{ $content | transform.XMLEscape | safeHTML }}</content>
+  </entry>
+{{ end }}
+</feed>

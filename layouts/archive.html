@@ -1,0 +1,21 @@
+{{ define "main" }}
+<div class="wrap">
+  <h1 class="page-title">{{ .Title }}</h1>
+  {{- with .Content }}
+  <div class="intro">{{ . }}</div>
+  {{- end }}
+  {{- range (where site.RegularPages "Section" "lightning").GroupByDate "2006" }}
+  <section class="year-group">
+    <h2 class="year-heading">{{ .Key }}</h2>
+    <ul class="archive-list">
+      {{- range .Pages }}
+      <li>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2" }}</time>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</div>
+{{ end }}

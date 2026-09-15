@@ -1,0 +1,13 @@
+{{ define "main" }}
+<div class="wrap">
+  <h1 class="page-title">{{ .Title }}</h1>
+  {{- with .Content }}
+  <div class="intro">{{ . }}</div>
+  {{- end }}
+  <div class="post-list">
+    {{- range .Pages }}
+    {{ partial "post-summary.html" . }}
+    {{- end }}
+  </div>
+</div>
+{{ end }}

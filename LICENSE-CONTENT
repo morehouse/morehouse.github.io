@@ -1,0 +1,28 @@
+This license covers the CONTENT of this repository: the writing in content/
+and the images in static/images/.
+
+The site code is licensed separately, under the MIT license. See LICENSE.
+
+----------------------------------------------------------------------
+
+Copyright (c) 2026 Matt Morehouse
+
+The content is licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0).
+
+  Summary:   https://creativecommons.org/licenses/by/4.0/
+  Full text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+You are free to share and adapt this material for any purpose, including
+commercially, provided you give appropriate credit, link to the license, and
+indicate whether you made changes.
+
+A suitable attribution is:
+
+  "<Title>" by Matt Morehouse (https://morehouse.dev), licensed CC BY 4.0.
+
+Code samples are a separate matter. Many of the snippets in these posts are
+quoted or adapted from the projects being analysed -- LND, Core Lightning, LDK,
+Eclair and others -- and those remain under their own upstream licenses. This
+file neither grants nor restricts any right in them; check the project they
+came from.

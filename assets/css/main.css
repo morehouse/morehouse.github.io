@@ -1,0 +1,689 @@
+/*
+ * morehouse.dev
+ *
+ * One light theme on warm paper, a 16px body, the system sans stack, and no
+ * JavaScript.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* The sheet of paper the site is printed on. */
+  --bg: #fbf7f0;
+  --surface: #f4eee3;
+  /* The desk the paper lies on, visible in the margins. */
+  --desk: #ddd0b8;
+  --text: #23201c;
+  --text-muted: #6d6458;
+  --border: #e6ddcd;
+  --border-strong: #d6cab4;
+  /* Pine accent. */
+  --accent: #2c6141;
+  --accent-deep: #1e462e;
+  --accent-tint: #dceade;
+  --shadow: 35 32 28;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  --step--1: clamp(0.8125rem, 0.795rem + 0.09vw, 0.875rem);
+  --step-0: clamp(0.9375rem, 0.92rem + 0.09vw, 1rem);
+  --step-1: clamp(1.0625rem, 1.04rem + 0.11vw, 1.125rem);
+  --step-2: clamp(1.1875rem, 1.13rem + 0.28vw, 1.3125rem);
+  --step-3: clamp(1.375rem, 1.25rem + 0.6vw, 1.625rem);
+  --step-4: clamp(1.75rem, 1.5rem + 1.2vw, 2.25rem);
+
+  /*
+   * Width of the sheet, gutters included. The text column is this minus two
+   * gutters, so it lands near 700px on a wide screen.
+   */
+  --measure: 48rem;
+  /* Grows with the viewport, so the paper keeps a real margin when it is wide
+     and does not waste one when it is narrow. */
+  --gutter: clamp(1.15rem, 0.6rem + 2.5vw, 2.25rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/*
+ * The page is the desk, content sits on a sheet of paper laid on top of it.
+ */
+body {
+  margin: 0;
+  background: var(--desk);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: 1.65;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sheet {
+  max-width: var(--measure);
+  /* Runs to the bottom of the viewport so the desk never shows under a short
+     page such as 404. */
+  min-height: 100vh;
+  margin-inline: auto;
+  background: var(--bg);
+  border-inline: 1px solid var(--border-strong);
+  box-shadow: 0 0 60px rgb(var(--shadow) / 11%);
+}
+
+::selection {
+  background: var(--accent-tint);
+  color: var(--text);
+}
+
+.wrap {
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: var(--bg);
+  z-index: 10;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+/* ---------------------------------------------------------------- links */
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--accent-deep);
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------- header */
+
+/*
+ * Pinned header. Pure CSS, no scroll listener.
+ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg);
+  border-top: 3px solid var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-block: 1.1rem;
+  margin-bottom: 2.5rem;
+}
+
+/*
+ * Keep a linked heading clear of the pinned header. Generous enough to cover
+ * the two-row header a narrow screen produces.
+ */
+:is(h1, h2, h3, h4)[id] {
+  scroll-margin-top: 6.5rem;
+}
+
+.site-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.25rem;
+}
+
+.site-title {
+  font-size: var(--step-2);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.site-title:hover {
+  color: var(--accent);
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-size: var(--step--1);
+  letter-spacing: 0.01em;
+}
+
+.site-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  color: var(--accent);
+}
+
+.site-nav a[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+/* ----------------------------------------------------------- typography */
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  font-weight: 700;
+  margin-block: 2em 0.6em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--step-4);
+  margin-block-start: 0;
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-size: var(--step-2);
+}
+
+h4 {
+  font-size: var(--step-1);
+}
+
+p,
+ul,
+ol,
+blockquote {
+  margin-block: 0 1.15em;
+}
+
+li + li {
+  margin-block-start: 0.35em;
+}
+
+ul,
+ol {
+  padding-inline-start: 1.4em;
+}
+
+blockquote {
+  margin-inline: 0;
+  padding-inline-start: 1.1em;
+  border-inline-start: 3px solid var(--accent);
+  color: var(--text-muted);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin-block: 2.5rem;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+strong {
+  font-weight: 650;
+}
+
+/* ------------------------------------------------------------ home/list */
+
+.intro {
+  font-size: var(--step-1);
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  text-wrap: pretty;
+}
+
+.intro p:last-child {
+  margin-bottom: 0;
+}
+
+.section-heading {
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  font-weight: 700;
+  margin-block: 0 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.post-summary {
+  margin-bottom: 2.25rem;
+}
+
+.post-summary-title {
+  font-size: var(--step-2);
+  margin-block: 0 0.25rem;
+}
+
+.post-summary-title a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.post-summary-title a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.post-summary-desc {
+  color: var(--text-muted);
+  margin-block: 0.35rem 0;
+  text-wrap: pretty;
+}
+
+.more-link {
+  margin-top: 3rem;
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.more-link a {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.more-link a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+/* ----------------------------------------------------------------- post */
+
+.post-header {
+  margin-bottom: 1.75rem;
+}
+
+.post-title,
+.page-title {
+  margin-block: 0 0.5rem;
+}
+
+.post-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.post-title a:hover {
+  color: var(--accent);
+}
+
+/*
+ * The `description` front matter. It is the meta description and the Atom
+ * <summary>.
+ */
+.post-description {
+  font-size: var(--step-1);
+  color: var(--text-muted);
+  margin-block: 0 0.6rem;
+  text-wrap: pretty;
+}
+
+.post-meta {
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.post-meta .sep {
+  padding-inline: 0.4em;
+  opacity: 0.5;
+}
+
+.post-feature {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgb(var(--shadow) / 6%),
+    0 6px 16px rgb(var(--shadow) / 5%);
+  margin-bottom: 2rem;
+}
+
+.post-content > :first-child {
+  margin-block-start: 0;
+}
+
+.post-content h2 {
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.post-content img {
+  border-radius: 6px;
+}
+
+.post-footer {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ------------------------------------------------------------ home feed */
+
+/*
+ * The home page inlines each post in full, with posts separated by a rule.
+ */
+.feed-post + .feed-post {
+  margin-top: 3.5rem;
+  padding-top: 3.5rem;
+  border-top: 1px solid var(--border-strong);
+}
+
+.feed-post .post-title {
+  font-size: var(--step-4);
+}
+
+/* ----------------------------------------------------------------- tags */
+
+.tag-list,
+.tag-index {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-list li + li,
+.tag-index li + li {
+  margin-block-start: 0;
+}
+
+.tag-list a,
+.tag-index a {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.tag-list a:hover,
+.tag-index a:hover {
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.tag-index li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tag-count {
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+
+.term-count {
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  margin-block: -0.25rem 2rem;
+}
+
+/* -------------------------------------------------------------- archive */
+
+/* Symmetric, so the first group also clears the page title. */
+.year-group {
+  margin-block: 2.5rem;
+}
+
+.year-heading {
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  font-weight: 700;
+  margin-block: 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.archive-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.archive-list li {
+  display: flex;
+  gap: 1rem;
+  margin-block-start: 0;
+  padding-block: 0.4rem;
+}
+
+.archive-list time {
+  flex: 0 0 4.5rem;
+  color: var(--text-muted);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+  padding-top: 0.15em;
+}
+
+.archive-list a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.archive-list a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------------------- code */
+
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+:not(pre) > code {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+  overflow-wrap: break-word;
+}
+
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  line-height: 1.55;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.9rem 1rem;
+  margin-block: 0 1.5em;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+.highlight {
+  margin-block: 0 1.5em;
+}
+
+.highlight pre {
+  margin-block: 0;
+}
+
+/* --------------------------------------------------------------- tables */
+
+.table-wrap {
+  overflow-x: auto;
+  margin-block: 0 1.5em;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--step--1);
+}
+
+/*
+ * Replaces kramdown's `{: rules="groups"}`: a rule between the header group
+ * and the body, and nothing between individual rows.
+ */
+thead th {
+  border-bottom: 2px solid var(--border-strong);
+  text-align: left;
+  font-weight: 650;
+}
+
+th,
+td {
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+}
+
+th:first-child,
+td:first-child {
+  padding-inline-start: 0;
+}
+
+tbody tr + tr td {
+  border-top: 1px solid var(--border);
+}
+
+/* ----------------------------------------------------------------- math */
+
+.math-block {
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-block: 1.5em;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------- footer */
+
+.site-footer {
+  margin-top: 5rem;
+  padding-block: 1.75rem 2.5rem;
+  border-top: 1px solid var(--border);
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+
+.site-footer p {
+  margin-block: 0 0.5rem;
+}
+
+.site-footer p:last-child {
+  margin-bottom: 0;
+}
+
+.site-footer a {
+  color: var(--text-muted);
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+.site-footer span[aria-hidden] {
+  padding-inline: 0.4em;
+  opacity: 0.5;
+}
+
+/* --------------------------------------------------------- small screens */
+
+@media (max-width: 30rem) {
+  /* The desk has no room to show at this width, so drop the paper edges and
+     let the sheet run full bleed. --gutter is already at its clamp minimum. */
+  .sheet {
+    border-inline: 0;
+    box-shadow: none;
+  }
+
+  /* Leaner bar: it is pinned, so its height is a permanent cost here. */
+  .site-header {
+    padding-block: 0.8rem;
+    margin-bottom: 2rem;
+  }
+
+  .site-header-inner {
+    gap: 0.15rem 1rem;
+  }
+
+  .feed-post + .feed-post {
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+  }
+
+  .archive-list li {
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .archive-list time {
+    flex-basis: auto;
+    padding-top: 0;
+  }
+}

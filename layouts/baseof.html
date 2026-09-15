@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="{{ or site.Language.Locale "en" }}">
+<head>
+{{ partial "head.html" . }}
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+{{/* Header, content and footer share one sheet so the paper runs unbroken
+     down the middle of the page and the margins read as a backdrop. */}}
+<div class="sheet">
+{{ partial "site-header.html" . }}
+<main id="content">
+{{ block "main" . }}{{ end }}
+</main>
+{{ partial "site-footer.html" . }}
+</div>
+</body>
+</html>

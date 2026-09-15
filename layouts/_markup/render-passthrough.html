@@ -1,0 +1,17 @@
+{{- /*
+  Renders LaTeX to MathML at build time using the KaTeX support compiled into
+  the Hugo binary. No client-side JavaScript and no stylesheet are involved:
+  MathML Core is rendered natively by the browser.
+*/ -}}
+{{- $block := eq .Type "block" -}}
+{{- with try (transform.ToMath .Inner (dict "displayMode" $block)) -}}
+  {{- with .Err -}}
+    {{- errorf "render-passthrough: unable to render %q: %s" $.Inner . -}}
+  {{- else with .Value -}}
+    {{- if $block -}}
+    <div class="math-block">{{ . }}</div>
+    {{- else -}}
+    {{- . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

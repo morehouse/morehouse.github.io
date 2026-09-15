@@ -1,0 +1,10 @@
+{{ define "main" }}
+<div class="wrap">
+  <h1 class="page-title">Page not found</h1>
+  <p>That page does not exist. It may have moved, or the link may be wrong.</p>
+  <p>
+    Try <a href="{{ "/posts/" | relURL }}">all posts</a>
+    or the <a href="{{ "/" | relURL }}">home page</a>.
+  </p>
+</div>
+{{ end }}

@@ -1,0 +1,49 @@
+{{ define "main" }}
+<div class="wrap">
+  {{- with .Content }}
+  <div class="intro">{{ . }}</div>
+  {{- end }}
+  {{/* The page's only h1. Post titles below are h2 so the outline stays flat
+       and predictable with five articles inlined on one page. */}}
+  <h1 class="section-heading">Recent posts</h1>
+  <div class="post-feed">
+    {{- range $i, $p := first 5 (where site.RegularPages "Section" "lightning") }}
+    <article class="post feed-post">
+      <header class="post-header">
+        <h2 class="post-title"><a href="{{ $p.RelPermalink }}">{{ $p.Title }}</a></h2>
+        {{- with $p.Description }}
+        <p class="post-description">{{ . }}</p>
+        {{- end }}
+        {{ partial "post-meta.html" $p }}
+      </header>
+      {{- with $p.Params.featured_image }}
+      {{/* Only the first header image is above the fold; the rest of this
+           page is several thousand words and 25+ images below it. */}}
+      <img class="post-feature" src="{{ (printf "images/%s" .) | relURL }}" alt=""
+           {{- if gt $i 0 }} loading="lazy" decoding="async"{{ end }}>
+      {{- end }}
+      {{/* Strip heading ids: five posts on one page would otherwise emit five
+           sets of them, and duplicate ids are invalid. The per-post pages keep
+           theirs, and no post links to its own headings. */}}
+      <div class="post-content">
+        {{ $p.Content | replaceRE `(<h[1-6][^>]*) id="[^"]*"` "$1" | safeHTML }}
+      </div>
+      <footer class="post-footer">
+        {{- with $p.GetTerms "tags" }}
+        <ul class="tag-list">
+          {{- range . }}
+          <li><a href="{{ .RelPermalink }}">{{ .Page.Data.Term }}</a></li>
+          {{- end }}
+        </ul>
+        {{- end }}
+      </footer>
+    </article>
+    {{- end }}
+  </div>
+  {{/* The count is the point: five full posts read like the whole site, so
+       this is what tells the reader the home page is a subset. */}}
+  <p class="more-link">
+    <a href="{{ "/posts/" | relURL }}">All {{ len (where site.RegularPages "Section" "lightning") }} posts</a>
+  </p>
+</div>
+{{ end }}

@@ -1,0 +1,86 @@
+name: Deploy site to Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment. Do not cancel a run in progress: these are
+# production deploys and should be allowed to finish.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  # The entire dependency manifest for this site is these two values.
+  # To bump: change the version, download the tarball, and replace the checksum
+  # with `sha256sum hugo_<version>_linux-amd64.tar.gz`.
+  HUGO_VERSION: 0.162.1
+  HUGO_SHA256: 4bfcdb092d0306586f1b72e5687787ead053faab2d71f09951d3c5fecde66873
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Standard edition is sufficient and is what this site is verified
+      # against.
+      - name: Install Hugo
+        run: |
+          set -euo pipefail
+          url="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_linux-amd64.tar.gz"
+          curl -sSLf -o hugo.tar.gz "$url"
+          echo "${HUGO_SHA256}  hugo.tar.gz" | sha256sum --check --strict -
+          tar -xzf hugo.tar.gz hugo
+          ./hugo version
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build
+        run: ./hugo --minify --printPathWarnings
+        env:
+          HUGO_ENVIRONMENT: production
+
+      - name: Assert no old-domain leakage
+        run: |
+          if grep -rn 'morehouse\.github\.io' public/; then
+            echo "::error::Found morehouse.github.io in the built site (see matches above)."
+            exit 1
+          fi
+
+      # No JavaScript and no third-party requests.
+      - name: Assert no scripts or third-party requests
+        run: |
+          if grep -rniE '<script|googleapis|platform\.twitter|buttons\.github|jsdelivr|cdnjs' public/; then
+            echo "::error::Found a script tag or third-party reference in the built site."
+            exit 1
+          fi
+
+      - name: Assert RSS feed at /feed.xml
+        run: |
+          test -s public/feed.xml || {
+            echo "::error::public/feed.xml is missing; /feed and /feed.xml both break."
+            exit 1
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

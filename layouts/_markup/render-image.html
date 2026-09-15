@@ -1,0 +1,8 @@
+{{- /*
+  In-body images. The only reason this hook exists is the loading/decoding
+  pair: the home page inlines five whole posts, which is 25+ images, and every
+  one of them is below the fold. Header images are emitted by the templates,
+  not here, so the first image on a page is never lazy.
+*/ -}}
+<img src="{{ .Destination | safeURL }}" alt="{{ .PlainText }}"
+  {{- with .Title }} title="{{ . }}"{{ end }} loading="lazy" decoding="async">

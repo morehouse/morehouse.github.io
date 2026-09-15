@@ -1,0 +1,11 @@
+{{ define "main" }}
+<div class="wrap">
+  <h1 class="page-title">Tagged "{{ .Data.Term }}"</h1>
+  <p class="term-count">{{ len .Pages }} post{{ if ne (len .Pages) 1 }}s{{ end }}</p>
+  <div class="post-list">
+    {{- range .Pages }}
+    {{ partial "post-summary.html" . }}
+    {{- end }}
+  </div>
+</div>
+{{ end }}

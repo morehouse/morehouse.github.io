@@ -1,0 +1,84 @@
+baseURL = 'https://morehouse.dev/'
+locale = 'en-us'
+title = 'Matt Morehouse'
+copyright = 'Matt Morehouse'
+timeZone = 'America/Chicago'
+enableRobotsTXT = true
+
+[params]
+  description = 'Security research on the Bitcoin Lightning Network.'
+  author = 'Matt Morehouse'
+  email = 'matt@morehouse.dev'
+  github = 'morehouse'
+  # Fallback og:image for pages with no featured_image of their own. Never
+  # rendered on the site itself; only social cards use it.
+  defaultImage = 'bitcoin_logo.png'
+
+[taxonomies]
+  tag = 'tags'
+
+# Without this, an absent `lastmod` falls through to :fileModTime, which would
+# stamp every post with the checkout's mtime and corrupt the feed and sitemap.
+[frontmatter]
+  lastmod = ['lastmod', 'date']
+
+[menus]
+  [[menus.main]]
+    name = 'Posts'
+    pageRef = '/posts'
+    weight = 10
+  [[menus.main]]
+    name = 'About'
+    pageRef = '/about'
+    weight = 20
+  [[menus.main]]
+    name = 'Donate'
+    pageRef = '/donate'
+    weight = 30
+  [[menus.main]]
+    name = 'GitHub'
+    url = 'https://github.com/morehouse'
+    weight = 40
+
+[markup]
+  [markup.goldmark.renderer]
+    # No post contains raw HTML; keep it that way.
+    unsafe = false
+  [markup.goldmark.extensions.passthrough]
+    enable = true
+    [markup.goldmark.extensions.passthrough.delimiters]
+      block = [['$$', '$$'], ['\[', '\]']]
+      inline = [['$', '$'], ['\(', '\)']]
+  [markup.highlight]
+    noClasses = false
+    lineNos = false
+    tabWidth = 4
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
+
+# Atom is not a built-in output format, so register one that writes /feed.xml,
+# preserving both the path and the format the existing subscribers use.
+[mediaTypes]
+  [mediaTypes.'application/atom+xml']
+    suffixes = ['xml']
+
+[outputFormats]
+  [outputFormats.atom]
+    mediaType = 'application/atom+xml'
+    baseName = 'feed'
+    rel = 'alternate'
+    isPlainText = false
+
+[outputs]
+  home = ['html', 'atom']
+  # Suppress Hugo's default per-section and per-taxonomy RSS. The site has one
+  # feed, at /feed.xml, and nothing links to those index.xml files.
+  section = ['html']
+  taxonomy = ['html']
+  term = ['html']
+  page = ['html']
+
+[minify]
+  [minify.tdewolff.html]
+    keepQuotes = true
