@@ -12,7 +12,13 @@ of the network.
 
 Fingerprint: `1827 E7A2 FF8B AB20 E6A4 46B9 CC8E CA22 4831 C982`
 
-To import:
+Fetch it from this domain:
+
+```shell
+gpg --locate-keys matt@morehouse.dev
+```
+
+Or from a keyserver:
 
 ```shell
 gpg --keyserver hkps://keys.openpgp.org --recv-keys "1827 E7A2 FF8B AB20 E6A4 46B9 CC8E CA22 4831 C982"
