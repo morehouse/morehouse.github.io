@@ -15,5 +15,5 @@ Fingerprint: `1827 E7A2 FF8B AB20 E6A4 46B9 CC8E CA22 4831 C982`
 To import:
 
 ```shell
-gpg --keyserver keyserver.ubuntu.com --recv-keys "1827 E7A2 FF8B AB20 E6A4 46B9 CC8E CA22 4831 C982"
+gpg --keyserver hkps://keys.openpgp.org --recv-keys "1827 E7A2 FF8B AB20 E6A4 46B9 CC8E CA22 4831 C982"
 ```
